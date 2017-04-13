@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1
+namespace LogicParser
 {
     class Operator
     {
@@ -13,30 +13,27 @@ namespace WindowsFormsApplication1
             /// <summary>
             /// Left Blanket
             /// </summary>
-            LB = 10,
+            LB = 15,
             /// <summary>
             /// Right Blanket
             /// </summary>
-            RB = 11,
+            RB = 14,
             /// <summary>
             /// Not
             /// </summary>
-            NOT = 12,
+            AND = 13,
             /// <summary>
             /// Entailment
             /// </summary>
-            EN = 13,
+            OR = 12,
             /// <summary>
             /// And
             /// </summary>
-            AND = 14,
+            ENT = 11,
             /// <summary>
             /// Or
             /// </summary>
-            NOT = 15,
-            ERR = 16
-
-
+            ERR = 10
         }
         public OperatorType Type { get; set; }
         public string Value { get; set; }
@@ -46,28 +43,30 @@ namespace WindowsFormsApplication1
             this.Value = value;
         }
 
+        public Operator(string type, string value)
+        {
+            this.Type = convertOperator(type);
+            this.Value = value;
+        }
+
         /// <summary>
         /// Define new operator and return their operator type respectively
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public OperatorType ConvertOperator(string type)
+        public OperatorType convertOperator(string type)
         {
             switch (type)
             {
-                case "&&": return OperatorType.AND;
-                case "||": return OperatorType.OR;
-                case "!": return OperatorType.NOT;
-                case "=>": return OperatorType.EN;
+                case "&": return OperatorType.AND;
+                case "|": return OperatorType.OR;
+                case ">": return OperatorType.ENT;
                 case "(": return OperatorType.LB;
                 case ")": return OperatorType.RB;
                 default: return OperatorType.AND;
             }
         }
 
-        public int bool comparePriority(OperatorType typeA, OperatorType typeB)
-        {
-
-        }
+        
     }
 }

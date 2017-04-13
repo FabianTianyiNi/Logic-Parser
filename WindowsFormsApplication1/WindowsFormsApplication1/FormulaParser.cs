@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1
+namespace LogicParser
 {
     class FormulaParser
     {
@@ -39,11 +39,17 @@ namespace WindowsFormsApplication1
         {
             return -1;
         }
-
-        public bool comparePriority(int operator1, int operator2)
+        /// <summary>
+        /// Used to compare the priority of two operators
+        /// </summary>
+        /// <param name="operator1"></param>
+        /// <param name="operator2"></param>
+        /// <returns>three values: 0 same priority, 1 operator1 > operator2, -1 operator1 < operator2 </returns>
+        public int comparePriority(Operator.OperatorType operator1, Operator.OperatorType operator2)
         {
-
-            return false;
+            if (operator1 == operator2) return 0;
+            if (operator1 > operator2) return 1;
+            else return -1;
         }
 
 
@@ -56,7 +62,7 @@ namespace WindowsFormsApplication1
         {
             m_tokens.Clear();
             if (exp.Trim() == "") return false;
-            else if (!this.isMatching(exp)) return false;
+            //else if (!this.isMatching(exp)) return false;
             Stack<Object> operands = new Stack<Object>();
             Stack<Operator> operators = new Stack<Operator>();
 
@@ -100,13 +106,50 @@ namespace WindowsFormsApplication1
                     exp = exp.Substring(curPosition + 1).Trim();
                     continue;
                 }
-                //priority comparison
-                if()
-
-
+                //Other situdation for inserting operators
+                //if the priority of the current type is greater than the stack peek one
+                if (comparePriority(curType, operators.Peek().Type) == 1)
+                {
+                    operands.Push(new Operator(curType, curOperator));
+                }
+                // when the priority of the current type is smaller than the stack peek one 
+                //push out the peek into the operand stack and put the current type into the operators stack
+                else
+                {
+                    operands.Push(operators.Pop());
+                    //continue to justify the priority of the operators stack
+                    while (operators.Count > 0)
+                    {
+                        if (comparePriority(curType, operators.Peek().Type) == 1)
+                        {
+                            operands.Push(new Operator(curType, curOperator));
+                            continue;
+                        }
+                        else
+                        {
+                            operands.Push(operators.Pop());
+                            continue;
+                        }
+                    }
+                    while (operators.Count == 0)
+                    {
+                        operands.Push(curType);
+                        break;
+                    }
+                }
+                exp = exp.Substring(curPosition + 1);
             }
-
-
+            //clear all the operators left in the operators stack
+            while (operators.Count > 0)
+            {
+                operands.Push(operators.Pop());
+            }
+            //printf all the sysbols in he operands
+            while (operands.Count > 0)
+            {
+                m_tokens.Push(operands.Pop());
+            }
+            return true;
         }
     }
 }

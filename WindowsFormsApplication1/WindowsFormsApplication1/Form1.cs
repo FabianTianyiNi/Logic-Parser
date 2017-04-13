@@ -8,28 +8,71 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication1
+namespace LogicParser
+
 {
-    public partial class Form1 : Form
+    public partial class LogicParser : Form
     {
-        public Form1()
+        public LogicParser()
         {
             InitializeComponent();
+            terminalScreen.ReadOnly = true;
         }
 
         private void Output_Enter(object sender, EventArgs e)
         {
-
+            
         }
 
         private void and_Click(object sender, EventArgs e)
         {
-
+            formulaInput.AppendText("∧");
         }
 
         private void or_Click(object sender, EventArgs e)
         {
-
+            formulaInput.AppendText("∨");
         }
+
+        private void negation_Click(object sender, EventArgs e)
+        {
+            formulaInput.AppendText("¬");
+        }
+
+        private void entailment_Click(object sender, EventArgs e)
+        {
+            formulaInput.AppendText("⇒");
+        }
+
+        private void cancel_Click(object sender, EventArgs e)
+        {
+            formulaInput.Clear();
+        }
+
+        private void formulaInput_TextChanged(object sender, EventArgs e)
+        {
+            formulaInput.Focus();
+            formulaInput.Select(formulaInput.TextLength, 0);
+            formulaInput.ScrollToCaret();
+        }
+
+        private void terminalScreen_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void input_Click(object sender, EventArgs e)
+        {
+            string exp = formulaInput.Text.Trim();
+            FormulaParser formula = new FormulaParser();
+            if ((exp == "") || exp == null)
+            {
+                errorNotification.Text = "Your input formula doesn't exist.";
+                return;
+            }
+            formula.Parse(exp);
+        }
+
+        
     }
 }

@@ -1,0 +1,9 @@
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.csprojResolveAssemblyReference.cache
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.Properties.Resources.resources
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.csproj.GenerateResource.Cache
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\LogicParser.exe.config
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\LogicParser.exe
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\LogicParser.pdb
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.exe
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.pdb
+E:\Artificial Intellegence\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\LogicParser.LogicParser.resources
