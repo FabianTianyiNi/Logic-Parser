@@ -63,6 +63,7 @@ namespace LogicParser
 
         private void input_Click(object sender, EventArgs e)
         {
+            string tmpMessage;
             string exp = formulaInput.Text.Trim();
             FormulaParser formula = new FormulaParser();
             if ((exp == "") || exp == null)
@@ -71,6 +72,7 @@ namespace LogicParser
                 return;
             }
             formula.Parse(exp);
+            
         }
 
         

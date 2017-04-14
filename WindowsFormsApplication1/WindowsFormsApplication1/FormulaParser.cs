@@ -28,15 +28,39 @@ namespace LogicParser
                 return _Expression;
             }
         }
-
+        List<string> m_Operators = new List<string>(new string[]{
+            "(","∧",")","∨","⇒","¬","."});
         /// <summary>
         /// To find the position index of the input operator in the formula
         /// </summary>
         /// <param name="exp"></param>
         /// <param name="targetOperator"></param>
         /// <returns></returns>
-        public int findOperator(string exp, string targetOperator)
+        public int findOperator(string exp, string findOpt)
         {
+            string opt = "";
+            for (int i = 0; i < exp.Length; i++)
+            {
+                string chr = exp.Substring(i, 1);
+                
+                if (opt == "")
+                {
+                    if (findOpt != "")
+                    {
+                        if (findOpt == chr)
+                        {
+                            return i;
+                        }
+                    }
+                    else
+                    {
+                        if (m_Operators.Exists(x => x.Contains(chr)))
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
             return -1;
         }
         /// <summary>
@@ -66,18 +90,26 @@ namespace LogicParser
             Stack<Object> operands = new Stack<Object>();
             Stack<Operator> operators = new Stack<Operator>();
 
-            Operator.OperatorType curType = Operator.OperatorType.ERR;
             string curOperand = "";
             string curOperator = "";
-            int curPosition = 0;
+            int curPosition = findOperator(exp, "");
+            Operator.OperatorType curType = Operator.OperatorType.ERR;
 
+            exp += "."; //define a terminal symbol
             while (true)
             {
                 curPosition = findOperator(exp, "");
                 curOperand = exp.Substring(0, curPosition); //Record C# Substring(int startindex, int length)
                 curOperator = exp.Substring(curPosition, 1);
+                curType = Operator.convertOperator(curOperator);
 
-                if (curOperand != "") //if the 
+                if (curOperator == "(")
+                {
+                    operators.Push(new Operator(curOperator, curOperator));
+                    exp = exp.Substring(curPosition + 1).Trim();
+                    continue;
+                }
+                if (curOperand != "") 
                 {
                     operands.Push(new Operand(curOperand, curOperand));
                 }
@@ -86,12 +118,7 @@ namespace LogicParser
                     break;
                 }
                 //if face the left branket,push the symbol into its stack and shorten the original formula
-                if (curOperator == "(")
-                {
-                    operators.Push(new Operator(curOperator, curOperator));
-                    exp = exp.Substring(curPosition +1).Trim();
-                    continue;
-                }
+                
                 if (curOperator == ")")
                 {
                     while (operators.Count() > 0)
@@ -106,38 +133,60 @@ namespace LogicParser
                     exp = exp.Substring(curPosition + 1).Trim();
                     continue;
                 }
-                //Other situdation for inserting operators
-                //if the priority of the current type is greater than the stack peek one
-                if (comparePriority(curType, operators.Peek().Type) == 1)
+                //if opeators stack has symbols, it needs to do the priority comparison,
+                //otherwise just add the current operator into operators stack
+                if (operators.Count > 0)
                 {
-                    operands.Push(new Operator(curType, curOperator));
-                }
-                // when the priority of the current type is smaller than the stack peek one 
-                //push out the peek into the operand stack and put the current type into the operators stack
-                else
-                {
-                    operands.Push(operators.Pop());
-                    //continue to justify the priority of the operators stack
-                    while (operators.Count > 0)
+                    //Other situdation for inserting operators
+                    //if the priority of the current type is greater than the stack peek one
+                    if (operators.Peek().Type == Operator.OperatorType.LB)
+                    {
+                        operators.Push(new Operator(curType, curOperator));
+                        exp = exp.Substring(curPosition + 1).Trim();
+                    }
+                    else
                     {
                         if (comparePriority(curType, operators.Peek().Type) == 1)
                         {
                             operands.Push(new Operator(curType, curOperator));
-                            continue;
                         }
+                        // when the priority of the current type is smaller than the stack peek one 
+                        //push out the peek into the operand stack and put the current type into the operators stack
                         else
                         {
                             operands.Push(operators.Pop());
-                            continue;
+                            //continue to justify the priority of the operators stack
+                            while (operators.Count > 0)
+                            {
+                                if (comparePriority(curType, operators.Peek().Type) == 1)
+                                {
+                                    operands.Push(new Operator(curType, curOperator));
+                                    continue;
+                                }
+                                else
+                                {
+                                    operands.Push(operators.Pop());
+                                    continue;
+                                }
+                            }
+                            while (operators.Count == 0)
+                            {
+                                operands.Push(curType);
+                                break;
+                            }
                         }
                     }
-                    while (operators.Count == 0)
-                    {
-                        operands.Push(curType);
-                        break;
-                    }
+                    
                 }
-                exp = exp.Substring(curPosition + 1);
+
+                else
+                {
+                    operators.Push(new Operator(curType,curOperator));
+                    exp = exp.Substring(curPosition + 1);
+                }
+                
+                
+                //exp = exp.Substring(curPosition + 1);
             }
             //clear all the operators left in the operators stack
             while (operators.Count > 0)
@@ -149,7 +198,10 @@ namespace LogicParser
             {
                 m_tokens.Push(operands.Pop());
             }
+
             return true;
         }
+
+        
     }
 }

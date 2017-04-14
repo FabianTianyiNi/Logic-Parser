@@ -10,6 +10,7 @@ namespace LogicParser
     {
         public enum OperatorType
         {
+            NOT = 16,
             /// <summary>
             /// Left Blanket
             /// </summary>
@@ -33,7 +34,8 @@ namespace LogicParser
             /// <summary>
             /// Or
             /// </summary>
-            ERR = 10
+            ERR = 10,
+            END = 09
         }
         public OperatorType Type { get; set; }
         public string Value { get; set; }
@@ -54,16 +56,18 @@ namespace LogicParser
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public OperatorType convertOperator(string type)
+        public static OperatorType convertOperator(string type)
         {
             switch (type)
             {
-                case "&": return OperatorType.AND;
-                case "|": return OperatorType.OR;
-                case ">": return OperatorType.ENT;
+                case "∧": return OperatorType.AND;
+                case "∨": return OperatorType.OR;
+                case "⇒": return OperatorType.ENT;
                 case "(": return OperatorType.LB;
                 case ")": return OperatorType.RB;
-                default: return OperatorType.AND;
+                case "¬": return OperatorType.NOT;
+                case ".": return OperatorType.END;
+                default: return OperatorType.END;
             }
         }
 
