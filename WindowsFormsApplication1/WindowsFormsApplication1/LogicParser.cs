@@ -51,9 +51,16 @@ namespace LogicParser
 
         private void formulaInput_TextChanged(object sender, EventArgs e)
         {
+            FormulaParser formula = new FormulaParser();
             formulaInput.Focus();
             formulaInput.Select(formulaInput.TextLength, 0);
             formulaInput.ScrollToCaret();
+            string errorMessage = formula.isMatching(formulaInput.Text);
+            errorNotification.Text = errorMessage;
+            while ((formulaInput.Text == null) || (formulaInput.Text == ""))
+            {
+                errorNotification.Text = "";
+            }
         }
 
         private void terminalScreen_TextChanged(object sender, EventArgs e)
@@ -66,6 +73,12 @@ namespace LogicParser
             string tmpMessage;
             string exp = formulaInput.Text.Trim();
             FormulaParser formula = new FormulaParser();
+            if (!formula.isCorrect)
+            {
+                string faultMessage = formula.isMatching(exp);
+                faultMessage = "> " + faultMessage;
+                terminalScreen.Text = faultMessage;
+            }
             if ((exp == "") || exp == null)
             {
                 errorNotification.Text = "Your input formula doesn't exist.";

@@ -40,6 +40,7 @@ namespace LogicParser
         }
         public OperandType Type { get; set; }
         public string Value { get; set; }
+        public string boolType { get; set; }
         public Operand(OperandType type, string value)
         {
             this.Type = type;

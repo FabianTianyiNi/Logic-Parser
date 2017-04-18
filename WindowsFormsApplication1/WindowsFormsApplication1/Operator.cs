@@ -50,6 +50,7 @@ namespace LogicParser
             this.Type = convertOperator(type);
             this.Value = value;
         }
+        public string tmpResult;
 
         /// <summary>
         /// Define new operator and return their operator type respectively
@@ -69,6 +70,20 @@ namespace LogicParser
                 case ".": return OperatorType.END;
                 default: return OperatorType.END;
             }
+        }
+
+        public string and(Operand OperandA, Operand OperandB)
+        {
+            
+            if (OperandA.boolType == "T")
+            {
+                tmpResult = OperandB.boolType == "T" ?  "T" : "F";
+            }
+            if (OperandA.boolType == "F")
+            {
+                tmpResult = OperandB.boolType == "T" ?  "T" : "F";
+            }
+            return tmpResult;
         }
 
         

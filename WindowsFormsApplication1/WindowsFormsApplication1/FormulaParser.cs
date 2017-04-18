@@ -11,6 +11,7 @@ namespace LogicParser
         Stack<Object> m_tokens = new Stack<object>();
         public Stack<Object> Tokens { get { return m_tokens; } }
         private string _Expression;
+        public bool isCorrect;
         public string expression
         {
             get
@@ -42,7 +43,6 @@ namespace LogicParser
             for (int i = 0; i < exp.Length; i++)
             {
                 string chr = exp.Substring(i, 1);
-                
                 if (opt == "")
                 {
                     if (findOpt != "")
@@ -76,6 +76,52 @@ namespace LogicParser
             else return -1;
         }
 
+        /// <summary>
+        /// to justify if two reversed brackets exist
+        /// </summary>
+        /// <param name="exp">input a string</param>
+        /// <returns>return faults</returns>
+        public string isMatching(string exp)
+        {
+            Stack<string> bracketMatcher = new Stack<string>();
+            //int count = 0; //record how many pairs of brackets
+            for (int i = 0; i < exp.Length; i++)
+            {
+                string chr = exp.Substring(i, 1);
+                if (chr == "(")
+                {
+                    bracketMatcher.Push(chr);
+                    //count++;
+                }
+                if (chr == ")")
+                {
+                    if (bracketMatcher.Peek() == "(")
+                    {
+                        bracketMatcher.Pop();
+                        isCorrect = true;
+                    }
+
+                    else
+                    {
+                        isCorrect = false;
+                        return "SYNTAX ERROR! lack of bracket pairs";
+                    }
+                        
+                }
+                if (i == exp.Length - 1)
+                {
+                    if (bracketMatcher.Count > 0)
+                    {
+                        isCorrect = false;
+                        return "SYNTAX ERROR! Lack of right brackets";
+                    }                       
+                }
+                
+            }
+            return "";
+        }
+
+       
 
         /// <summary>
         /// Convert the input formula into Rverse Poland Formula
@@ -84,6 +130,8 @@ namespace LogicParser
         /// <returns></returns>
         public bool Parse(string exp)
         {
+            string matchMessage = isMatching(exp);
+            if (matchMessage != "") return false;
             m_tokens.Clear();
             if (exp.Trim() == "") return false;
             //else if (!this.isMatching(exp)) return false;
@@ -113,6 +161,10 @@ namespace LogicParser
                 {
                     operands.Push(new Operand(curOperand, curOperand));
                 }
+                //if (curOperator == "⇒")
+                //{
+                //    operators.Push(new Operator(curOperator, curOperator));
+                //}
                 if (curOperator == ".")
                 {
                     break;
@@ -185,7 +237,6 @@ namespace LogicParser
                     exp = exp.Substring(curPosition + 1);
                 }
                 
-                
                 //exp = exp.Substring(curPosition + 1);
             }
             //clear all the operators left in the operators stack
@@ -200,6 +251,38 @@ namespace LogicParser
             }
 
             return true;
+        }
+
+        public void update()
+        {
+
+        }
+
+        public object evaluate()
+        {
+            if (m_tokens == null) return null;
+            Stack<Operand> operands = new Stack<Operand>();
+            Stack<Operator> operators = new Stack<Operator>();
+            Operand operandA;
+            Operand operandB;
+
+            foreach (object item in m_tokens)
+            {
+                if (item is Operand)
+                {
+                    operands.Push((Operand)item);
+                }
+                else
+                {
+                    switch (((Operator)item).Type)
+                    {
+                        #region and "∧"
+                        case Operator.OperatorType.AND:
+                            operands.Push(new Operand());
+
+                    }
+                }
+            }
         }
 
         
