@@ -3,3 +3,4 @@ This is a system based on 2 big sections in Artifitial Intelligence, which inclu
 
 ## History
 Version 1.0: Logic sentences satisfiable & valid justification. Updated on 4/13/2017 time zone in Dallas, TX, United States.
+version 2.0---
