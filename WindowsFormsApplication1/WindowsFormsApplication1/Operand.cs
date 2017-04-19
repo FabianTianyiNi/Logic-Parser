@@ -51,6 +51,10 @@ namespace LogicParser
             this.Type = ConvertOperand(type);
             this.Value = value;
         }
+        public Operand(string value)
+        {
+            this.Value = value;
+        }
 
         public static OperandType ConvertOperand(string type)
         {

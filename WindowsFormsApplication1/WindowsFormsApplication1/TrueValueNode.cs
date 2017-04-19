@@ -23,5 +23,18 @@ namespace LogicParser
                 this.children = new List<TrueValueNode<T>>();
             }
         }
+        public void addChild(TrueValueNode<T> child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException("You cannot insert null object");
+            }
+            if (child.hasParent)
+            {
+                throw new ArgumentException("The node has already had a parent!");
+            }
+            child.hasParent = true;
+            this.children.Add(child);
+        }
     }
 }

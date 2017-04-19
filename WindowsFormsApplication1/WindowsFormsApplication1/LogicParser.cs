@@ -13,6 +13,7 @@ namespace LogicParser
 {
     public partial class LogicParser : Form
     {
+        List<Object> tmpList;
         public LogicParser()
         {
             InitializeComponent();
@@ -84,7 +85,10 @@ namespace LogicParser
                 errorNotification.Text = "Your input formula doesn't exist.";
                 return;
             }
+
             formula.Parse(exp);
+            formula.update();
+
             
         }
 

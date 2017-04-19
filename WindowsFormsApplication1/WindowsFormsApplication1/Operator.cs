@@ -86,6 +86,20 @@ namespace LogicParser
             return tmpResult;
         }
 
+        public string or(Operand OperandA, Operand OperandB)
+        {
+            if (OperandA.boolType == "T") tmpResult = "T";
+            if (OperandA.boolType == "F") tmpResult = OperandB.boolType == "F" ? "F" : "T";
+            return tmpResult;
+        }
+
+        public string imply(Operand OperandA, Operand OperandB)
+        {
+            if (OperandA.boolType == "T" && OperandB.boolType == "F") tmpResult = "F";
+            else tmpResult = "T";
+            return tmpResult;
+        }
+
         
     }
 }

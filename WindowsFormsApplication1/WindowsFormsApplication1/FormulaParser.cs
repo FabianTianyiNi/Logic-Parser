@@ -8,27 +8,33 @@ namespace LogicParser
 {
     class FormulaParser
     {
-        Stack<Object> m_tokens = new Stack<object>();
-        public Stack<Object> Tokens { get { return m_tokens; } }
+        List<Object> m_tokens = new List<Object>();
+        //public Stack<Object> Tokens { get { return m_tokens; } }
         private string _Expression;
+        private string result;
         public bool isCorrect;
-        public string expression
-        {
-            get
-            {
-                if (_Expression == null)
-                {
-                    foreach (var item in Tokens)
-                    {
-                        if (item is Operator)
-                            _Expression += (((Operator)item).Value + ",");
-                        if (item is Operand)
-                            _Expression += (((Operand)item).Value + ",");
-                    }
-                }
-                return _Expression;
-            }
-        }
+        public Operator calculator;
+        TrueValueTree<Object> logicTree;
+        List<Object> tmpList = new List<Object>();
+        List<Object> restoreList;
+        
+        //public string expression
+        //{
+        //    get
+        //    {
+        //        if (_Expression == null)
+        //        {
+        //            foreach (var item in Tokens)
+        //            {
+        //                if (item is Operator)
+        //                    _Expression += (((Operator)item).Value + ",");
+        //                if (item is Operand)
+        //                    _Expression += (((Operand)item).Value + ",");
+        //            }
+        //        }
+        //        return _Expression;
+        //    }
+        //}
         List<string> m_Operators = new List<string>(new string[]{
             "(","∧",")","∨","⇒","¬","."});
         /// <summary>
@@ -128,12 +134,12 @@ namespace LogicParser
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public bool Parse(string exp)
+        public void Parse(string exp)
         {
             string matchMessage = isMatching(exp);
-            if (matchMessage != "") return false;
+            //if (matchMessage != "");
             m_tokens.Clear();
-            if (exp.Trim() == "") return false;
+            if (exp.Trim() == "") return;
             //else if (!this.isMatching(exp)) return false;
             Stack<Object> operands = new Stack<Object>();
             Stack<Operator> operators = new Stack<Operator>();
@@ -247,28 +253,60 @@ namespace LogicParser
             //printf all the sysbols in he operands
             while (operands.Count > 0)
             {
-                m_tokens.Push(operands.Pop());
+                m_tokens.Add(operands.Pop());
             }
+        }
 
-            return true;
+        public void initialize()
+        {
+            if (m_tokens != null)
+            {
+                for (int i = 0; i< m_tokens.Count; i++)
+                {
+                    if (m_tokens[i] is Operand)
+                    {
+                        m_tokens[i] = "T";
+                    }
+                }
+            }
+            logicTree = new TrueValueTree<object>(m_tokens);
         }
 
         public void update()
         {
+            initialize();
+            int count = 0; // to calculate how many operands in  the formula.
+            if (m_tokens == null || m_tokens.Count == 0) throw new ArgumentNullException("Cannot update null list into tree");
+            foreach (Object item in m_tokens)
+            {
+                if ((item == "T") || (item == "F"))
+                {
+                    count++;
+                    tmpList.Add(item);
+                } 
+            }
+            for (int i = 0; i < tmpList.Count; i++)
+            {
+                tmpList[i] = "F";
+                result = evaluate(tmpList);
+            }
 
+
+            
         }
 
-        public object evaluate()
+        public string evaluate(List<Object> list)
         {
-            if (m_tokens == null) return null;
-            Stack<Operand> operands = new Stack<Operand>();
+            string finalResult;
+            if (list == null) return null;
+            Stack<Object> operands = new Stack<Object>();
             Stack<Operator> operators = new Stack<Operator>();
             Operand operandA;
             Operand operandB;
-
-            foreach (object item in m_tokens)
+     
+            foreach (Object item in list)
             {
-                if (item is Operand)
+                if (item == "T" || item == "F")
                 {
                     operands.Push((Operand)item);
                 }
@@ -278,11 +316,31 @@ namespace LogicParser
                     {
                         #region and "∧"
                         case Operator.OperatorType.AND:
-                            operands.Push(new Operand());
+                            operandA = (Operand)operands.Pop();
+                            operandB = (Operand)operands.Pop();
+                            operands.Push(new Operand(calculator.and(operandA, operandB)));
+                            break;
+                        #endregion
+                        #region or
+                        case Operator.OperatorType.OR:
+                            operandA = (Operand)operands.Pop();
+                            operandB = (Operand)operands.Pop();
+                            operands.Push(new Operand(calculator.or(operandA, operandB)));
+                            break;
+                        #endregion
+                        #region imply
+                        case Operator.OperatorType.ENT:
+                            operandA = (Operand)operands.Pop();
+                            operandB = (Operand)operands.Pop();
+                            operands.Push(new Operand(calculator.imply(operandA, operandB)));
+                            break;
+                        #endregion
 
                     }
                 }
             }
+            finalResult = operands.Pop().ToString();
+            return finalResult;
         }
 
         
