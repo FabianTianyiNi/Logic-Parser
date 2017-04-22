@@ -38,8 +38,14 @@ namespace LogicParser
             Z = 25,
             ERR = 26
         }
+        public enum OperandValue
+        {
+            T = 0,
+            F = 1
+        }
         public OperandType Type { get; set; }
         public string Value { get; set; }
+        public OperandValue boolValue { get; set; }
         public string boolType { get; set; }
         public Operand(OperandType type, string value)
         {

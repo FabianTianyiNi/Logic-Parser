@@ -50,7 +50,7 @@ namespace LogicParser
             this.Type = convertOperator(type);
             this.Value = value;
         }
-        public string tmpResult;
+        public static string tmpResult;
 
         /// <summary>
         /// Define new operator and return their operator type respectively
@@ -72,30 +72,30 @@ namespace LogicParser
             }
         }
 
-        public string and(Operand OperandA, Operand OperandB)
+        public static string and(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
             
-            if (OperandA.boolType == "T")
+            if (OperandA == Operand.OperandValue.T)
             {
-                tmpResult = OperandB.boolType == "T" ?  "T" : "F";
+                tmpResult = OperandB == Operand.OperandValue.T ?  "T" : "F";
             }
-            if (OperandA.boolType == "F")
+            if (OperandA == Operand.OperandValue.F)
             {
-                tmpResult = OperandB.boolType == "T" ?  "T" : "F";
+                tmpResult = OperandB == Operand.OperandValue.T ? "T" : "F";
             }
             return tmpResult;
         }
 
-        public string or(Operand OperandA, Operand OperandB)
+        public static string or(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
-            if (OperandA.boolType == "T") tmpResult = "T";
-            if (OperandA.boolType == "F") tmpResult = OperandB.boolType == "F" ? "F" : "T";
+            if (OperandA == Operand.OperandValue.T) tmpResult = "T";
+            if (OperandA == Operand.OperandValue.F) tmpResult = OperandB == Operand.OperandValue.F ? "F" : "T";
             return tmpResult;
         }
 
-        public string imply(Operand OperandA, Operand OperandB)
+        public static string imply(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
-            if (OperandA.boolType == "T" && OperandB.boolType == "F") tmpResult = "F";
+            if (OperandA == Operand.OperandValue.T && OperandB == Operand.OperandValue.F) tmpResult = "F";
             else tmpResult = "T";
             return tmpResult;
         }
