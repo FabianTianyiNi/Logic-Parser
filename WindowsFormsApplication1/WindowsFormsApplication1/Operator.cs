@@ -50,7 +50,7 @@ namespace LogicParser
             this.Type = convertOperator(type);
             this.Value = value;
         }
-        public static string tmpResult;
+        public static Operand tmpResult = new Operand(Operand.OperandType.TMP,"TMP");
 
         /// <summary>
         /// Define new operator and return their operator type respectively
@@ -72,31 +72,31 @@ namespace LogicParser
             }
         }
 
-        public static string and(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
+        public static Operand and(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
             
             if (OperandA == Operand.OperandValue.T)
             {
-                tmpResult = OperandB == Operand.OperandValue.T ?  "T" : "F";
+                tmpResult.boolValue = OperandB == Operand.OperandValue.T ?  Operand.OperandValue.T : Operand.OperandValue.F;
             }
             if (OperandA == Operand.OperandValue.F)
             {
-                tmpResult = OperandB == Operand.OperandValue.T ? "T" : "F";
+                tmpResult.boolValue = OperandB == Operand.OperandValue.T ? Operand.OperandValue.T : Operand.OperandValue.F;
             }
             return tmpResult;
         }
 
-        public static string or(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
+        public static Operand or(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
-            if (OperandA == Operand.OperandValue.T) tmpResult = "T";
-            if (OperandA == Operand.OperandValue.F) tmpResult = OperandB == Operand.OperandValue.F ? "F" : "T";
+            if (OperandA == Operand.OperandValue.T) tmpResult.boolValue = Operand.OperandValue.T;
+            if (OperandA == Operand.OperandValue.F) tmpResult.boolValue = OperandB == Operand.OperandValue.F ? Operand.OperandValue.F : Operand.OperandValue.T;
             return tmpResult;
         }
 
-        public static string imply(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
+        public static Operand imply(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
-            if (OperandA == Operand.OperandValue.T && OperandB == Operand.OperandValue.F) tmpResult = "F";
-            else tmpResult = "T";
+            if (OperandA == Operand.OperandValue.T && OperandB == Operand.OperandValue.F) tmpResult.boolValue = Operand.OperandValue.F;
+            else tmpResult.boolValue = Operand.OperandValue.T;
             return tmpResult;
         }
 

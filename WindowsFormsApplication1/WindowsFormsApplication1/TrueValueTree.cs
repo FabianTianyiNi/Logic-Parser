@@ -9,10 +9,11 @@ namespace LogicParser
     class TrueValueTree<T>
     {
         private TrueValueNode<T> root;
+        private TrueValueNode<T> node;
 
         public TrueValueTree(T value)
         {
-            if (value == null)
+            if (value == null) 
             {
                 throw new ArgumentNullException("The value couldn't be null");
             }

@@ -88,9 +88,7 @@ namespace LogicParser
 
             formula.Parse(exp);
             formula.initialize();
-            formula.update();
-
-            
+            formula.treeCounter();
         }
 
         

@@ -36,7 +36,9 @@ namespace LogicParser
             X = 23,
             Y = 24,
             Z = 25,
-            ERR = 26
+            ERR = 26,
+            TMP = 27,
+            ANS = 28
         }
         public enum OperandValue
         {
@@ -60,6 +62,13 @@ namespace LogicParser
         public Operand(string value)
         {
             this.Value = value;
+
+        }
+        public Operand(Operand operand)
+        {
+            this.Type = operand.Type;
+            this.boolType = operand.boolType;
+            this.Value = operand.Value;
         }
 
         public static OperandType ConvertOperand(string type)

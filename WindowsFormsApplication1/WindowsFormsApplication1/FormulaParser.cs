@@ -10,14 +10,15 @@ namespace LogicParser
     {
         List<Object> m_tokens = new List<Object>();
         //public Stack<Object> Tokens { get { return m_tokens; } }
-        private string _Expression;
-        private string result;
+        private Operand result;
         public bool isCorrect;
-        TrueValueTree<Object> logicTree;
-        Stack<Object> tmpStackForOperator = new Stack<object>();
-        Stack<Object> tmpStackForOperand = new Stack<object>();
-        List<Object> restoreList;
-        
+        TrueValueTree<object> logicTree;
+        private int pointer = 0;
+        Stack<object> tmpStack = new Stack<object>();
+        Queue<object> tmpqueueForOperand = new Queue<object>();
+        Stack<object> operands = new Stack<object>();
+        Stack<Operator> operators = new Stack<Operator>();
+
         //public string expression
         //{
         //    get
@@ -141,8 +142,7 @@ namespace LogicParser
             m_tokens.Clear();
             if (exp.Trim() == "") return;
             //else if (!this.isMatching(exp)) return false;
-            Stack<Object> operands = new Stack<Object>();
-            Stack<Operator> operators = new Stack<Operator>();
+            
 
             string curOperand = "";
             string curOperator = "";
@@ -267,6 +267,13 @@ namespace LogicParser
             {
                 m_tokens.Add(operands.Pop());
             }
+
+            pointer = m_tokens.Count - 1;
+
+            for (int i = m_tokens.Count - 1; i >= 0; i--)
+            {
+                operands.Push(m_tokens[i]);
+            }
         }
 
         public void initialize()
@@ -281,13 +288,27 @@ namespace LogicParser
                     }
                 }
             }
+            logicTree = new TrueValueTree<object>(m_tokens);
         }
 
-        public void update()
+        public void treeCounter()
         {
+            for (int i = pointer; i >= 0; i--)
+            {
+                if (m_tokens[pointer] is Operand) ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.F;
+                update(m_tokens);
+                pointer--;
+                treeCounter();
+            }
+            
+        }
+        public void update(List<object> list)
+        {
+            //pointer = m_tokens.Count - 1; 
             int count = 0; // to calculate how many operands in  the formula.
-            if (m_tokens == null || m_tokens.Count == 0) throw new ArgumentNullException("Cannot update null list into tree");
-            for (int i = m_tokens.Count - 1; i >= 0; i--)
+            if (list == null || list.Count == 0) throw new ArgumentNullException("Cannot update null list into tree");
+            TrueValueNode<object> tmpnode = new TrueValueNode<object>(list);
+            for (int i = pointer; i >= 0; i--)
             {
                 //if (item is Operator)
                 //{
@@ -298,60 +319,80 @@ namespace LogicParser
                 //    count++;
                 //    tmpListForOperand.Add(item);
                 //} 
-                if (((Operand)m_tokens[i]).boolValue != null)
+                if (list[i] is Operator) 
                 {
-                    if (tmpStackForOperand.Count == 0)
+                    if (i != 0)
                     {
-                        ((Operand)m_tokens[i]).boolValue = Operand.OperandValue.F;
-                        tmpStackForOperand.Push(m_tokens[i]);
+                        tmpqueueForOperand.Enqueue(list[i]);
                     }
-                    else tmpStackForOperand.Push(m_tokens[i]);
+                    else
+                    {
+                        tmpqueueForOperand.Enqueue(list[i]);
+                        //evaluate(tmpqueueForOperand, tmpStack);
+                        if (containsAnswer())
+                        {
+                            operands.Pop();
+                            operands.Push(new Operand((Operand)evaluate(tmpqueueForOperand, tmpStack).Pop()));
+                            
+                        }
+                        else
+                        {
+                            operands.Push(new Operand((Operand)evaluate(tmpqueueForOperand, tmpStack).Pop()));
+                        }
+                    }
                 }
-                else
-                {
-                    tmpStackForOperand.Push(m_tokens[i]);
-                    evaluate(tmpStackForOperand);
-                }
+                    
+                else tmpqueueForOperand.Enqueue(list[i]);
             }
-            m_tokens.RemoveAt(m_tokens.Count - 1);
-            logicTree = new TrueValueTree<object>(tmpStackForOperand);
-            tmpStackForOperand.Clear();
-            update();
-            
+
+            //m_tokens.RemoveAt(m_tokens.Count - 1);
+            //logicTree.Root.addChild(new TrueValueNode<object>(m_tokens));
+
+            tmpqueueForOperand.Clear();
         }
 
-        public Stack<Object> evaluate(Stack<Object> stack)
+        public Stack<object> evaluate(Queue<object> queue, Stack<object> stack)
         {
-            if (stack == null) return null;
-            Stack<Object> operands = new Stack<Object>();
-            Stack<Operator> operators = new Stack<Operator>();
-            Operator tmpOperator = (Operator)stack.Pop();
-            Operand operandB = (Operand)stack.Pop();
-            Operand operandA = (Operand)stack.Pop();
-     
-            switch (tmpOperator.Type)
+            if (queue == null) return null;
+            while (queue.Count != 0)
             {
-                #region and "∧"
-                        case Operator.OperatorType.AND:
-                            stack.Push(new Operand(Operator.and(operandA.boolValue, operandB.boolValue)));
-                            break;
-                        #endregion
-                #region or
-                        case Operator.OperatorType.OR:
-                            stack.Push(new Operand(Operator.or(operandA.boolValue, operandB.boolValue)));
-                            break;
-                        #endregion
-                #region imply
-                        case Operator.OperatorType.ENT:
-                            stack.Push(new Operand(Operator.imply(operandA.boolValue, operandB.boolValue)));
-                            break;
+                stack.Push(queue.Dequeue()); //to avoid stack.Peek() return ArgumentNullError
+                while (stack.Peek() is Operand)
+                {
+                    stack.Push(queue.Dequeue());
+                }
+                Operator tmpOperator = (Operator)stack.Pop();
+                Operand operandB = (Operand)stack.Pop();
+                Operand operandA = (Operand)stack.Pop();
+
+                switch (tmpOperator.Type)
+                {
+                    #region and "∧"
+                    case Operator.OperatorType.AND:
+                        stack.Push(new Operand(Operator.and(operandA.boolValue, operandB.boolValue)));
+                        break;
+                    #endregion
+                    #region or
+                    case Operator.OperatorType.OR:
+                        stack.Push(new Operand(Operator.or(operandA.boolValue, operandB.boolValue)));
+                        break;
+                    #endregion
+                    #region imply
+                    case Operator.OperatorType.ENT:
+                        stack.Push(new Operand(Operator.imply(operandA.boolValue, operandB.boolValue)));
+                        break;
                         #endregion
 
+                }
             }
             return stack;
         }
-            
+        public bool containsAnswer()
+        {
+            if (operands.Peek() is Operand.OperandType) return true;
+            else return false;
         }
+    }
 
         
     }

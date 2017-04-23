@@ -23,6 +23,11 @@ namespace LogicParser
                 this.children = new List<TrueValueNode<T>>();
             }
         }
+        public bool hasChild()
+        {
+            if (children == null || !children.Any()) return false;
+            else return true;
+        }
         public void addChild(TrueValueNode<T> child)
         {
             if (child == null)
@@ -36,5 +41,18 @@ namespace LogicParser
             child.hasParent = true;
             this.children.Add(child);
         }
+
+        public void traverseChildNode(TrueValueNode<T> fatherNode)
+        {
+            if (fatherNode.hasChild())
+            {
+                
+            }
+            else
+            {
+
+            }
+        }
+
     }
 }
