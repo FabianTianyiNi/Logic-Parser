@@ -19,8 +19,12 @@ namespace LogicParser
             }
             else
             {
-                this.root = new TrueValueNode<T>(value);
+                this.node = new TrueValueNode<T>(value);
             }
+        }
+        public TrueValueTree(TrueValueNode<T> root)
+        {
+            this.root = root;
         }
         public TrueValueTree(T value, params TrueValueTree<T>[] children)
             :this(value)
@@ -35,6 +39,10 @@ namespace LogicParser
             get
             {
                 return this.root;
+            }
+            set
+            {
+                this.root = value;
             }
         }
 

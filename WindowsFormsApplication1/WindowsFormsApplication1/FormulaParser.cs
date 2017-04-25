@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +12,7 @@ namespace LogicParser
     class FormulaParser
     {
         List<Object> m_tokens = new List<Object>();
+        List<object> tmpList = new List<object>();
         //public Stack<Object> Tokens { get { return m_tokens; } }
         private Operand result;
         public bool isCorrect;
@@ -18,6 +22,8 @@ namespace LogicParser
         Queue<object> tmpqueueForOperand = new Queue<object>();
         Stack<object> operands = new Stack<object>();
         Stack<Operator> operators = new Stack<Operator>();
+        TrueValueNode<object> curNode;
+        TrueValueNode<object> tmpNode;
 
         //public string expression
         //{
@@ -288,19 +294,104 @@ namespace LogicParser
                     }
                 }
             }
-            logicTree = new TrueValueTree<object>(m_tokens);
+            tmpList.Add(clone<List<object>>(m_tokens));
+            logicTree = new TrueValueTree<object>(tmpList);
+            logicTree.Root = new TrueValueNode<object>(tmpList);
+            curNode = logicTree.Root;
+        }
+
+        public static T clone<T>(T RealObject)
+        {
+            using (Stream objectStream = new MemoryStream())
+            {
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(objectStream, RealObject);
+                objectStream.Seek(0, SeekOrigin.Begin);
+                return (T)formatter.Deserialize(objectStream);
+            }
         }
 
         public void treeCounter()
         {
+            int reverseSequenceTValueCounter = 0;
             for (int i = pointer; i >= 0; i--)
             {
-                if (m_tokens[pointer] is Operand) ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.F;
-                update(m_tokens);
+                if (m_tokens[pointer] is Operand)
+                {
+                    if (((Operand)m_tokens[pointer]).boolValue == Operand.OperandValue.F)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.F;
+                        //update(tmpList);
+                        List<object> list = new List<object>();
+                        list.Add(clone<List<object>>(m_tokens));
+                        tmpNode = new TrueValueNode<object>(list);
+                        tmpNode.childrenNumber = reverseSequenceTValue((List<object>)list[0]);// judge how many child the node has
+                        tmpNode.nodepointer = pointer;
+                        curNode.addChild(tmpNode);
+                        tmpNode.setParentNode(curNode);
+                        curNode = tmpNode;
+                        if (checkIfRunOut(m_tokens))
+                        {
+                            curNode = curNode.getParentNode();
+                            while (curNode.childrenNumber == 1)// if the node only has one child node
+                            {
+                                curNode = curNode.getParentNode();
+                            }
+                            pointer = curNode.nodepointer;
+                            break;
+                        }
+                        pointer--;
+                        treeCounter();
+                    }
+                }
                 pointer--;
-                treeCounter();
             }
-            
+            //while (pointer < 0)
+            //{
+            //    pointer++;
+            //}
+            //while (!(m_tokens[pointer] is Operand))
+            //{
+            //    pointer++;
+            //}
+            //pointer++;
+            //if (m_tokens[pointer] is Operand)
+            //{
+            //    ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.T;
+            //    treeCounter();
+            //} 
+        }
+        public int reverseSequenceTValue(List<object> list)  
+        {
+            int count = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if ((list[i] is Operand))
+                {
+                    if (((Operand)list[i]).boolValue != Operand.OperandValue.F) count++;
+                    else continue;
+                }
+                else continue;
+               
+            }   
+            return count;
+        }
+
+        public bool checkIfRunOut(List<object> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] is Operand)
+                {
+                    if (((Operand)list[i]).boolValue == Operand.OperandValue.F) return true;
+                    else return false;
+                } 
+            }
+            return false;
         }
         public void update(List<object> list)
         {

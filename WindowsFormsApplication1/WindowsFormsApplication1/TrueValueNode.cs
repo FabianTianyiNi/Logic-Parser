@@ -11,6 +11,9 @@ namespace LogicParser
         private T value;
         private bool hasParent;
         private List<TrueValueNode<T>> children;
+        private TrueValueNode<T> parentNode;
+        public int childrenNumber;
+        public int nodepointer;
         public TrueValueNode(T value)
         {
             if (value == null)
@@ -23,6 +26,7 @@ namespace LogicParser
                 this.children = new List<TrueValueNode<T>>();
             }
         }
+        
         public bool hasChild()
         {
             if (children == null || !children.Any()) return false;
@@ -40,6 +44,7 @@ namespace LogicParser
             }
             child.hasParent = true;
             this.children.Add(child);
+
         }
 
         public void traverseChildNode(TrueValueNode<T> fatherNode)
@@ -54,5 +59,16 @@ namespace LogicParser
             }
         }
 
+        public void setParentNode(TrueValueNode<T> fatherNode)
+        {
+            this.parentNode = fatherNode;
+        }
+
+        public TrueValueNode<T> getParentNode()
+        {
+            return this.parentNode;
+        }
+
+        
     }
 }
