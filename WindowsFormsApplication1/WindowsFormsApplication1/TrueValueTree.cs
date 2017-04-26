@@ -10,10 +10,11 @@ namespace LogicParser
     {
         private TrueValueNode<T> root;
         private TrueValueNode<T> node;
+        List<TrueValueNode<T>> visitedNode;
 
         public TrueValueTree(T value)
         {
-            if (value == null) 
+            if (value == null)
             {
                 throw new ArgumentNullException("The value couldn't be null");
             }
@@ -27,12 +28,12 @@ namespace LogicParser
             this.root = root;
         }
         public TrueValueTree(T value, params TrueValueTree<T>[] children)
-            :this(value)
+            : this(value)
         {
             foreach (TrueValueTree<T> child in children)
             {
                 this.root.addChild(child.root);
-            }    
+            }
         }
         public TrueValueNode<T> Root
         {
@@ -44,6 +45,40 @@ namespace LogicParser
             {
                 this.root = value;
             }
+        }
+
+        public void treeBFSTrace()
+        {
+            Queue<TrueValueNode<T>> tempqueue = new Queue<TrueValueNode<T>>();
+            List<TrueValueNode<T>> children = new List<TrueValueNode<T>>();
+            visitedNode = new List<TrueValueNode<T>>();
+            tempqueue.Enqueue(root);
+            root.Visited = true;
+            while (tempqueue.Count > 0)
+            {
+                TrueValueNode<T> node = tempqueue.Dequeue();
+                visitedNode.Add(node);
+                children = node.getchildren();
+                foreach (TrueValueNode<T> item in children)
+                {
+                    tempqueue.Enqueue(item);
+                    item.Visited = true;
+                }
+            }
+        }
+        public bool checkIfExist(TrueValueNode<T> node)
+        {
+            foreach (TrueValueNode<T> item in visitedNode)
+            {
+                if (item == node) return true;
+                else continue;
+            }
+            return false;
+        }
+        public bool isEmpty()
+        {
+            if (root == null) return true;
+            return false;
         }
 
     }

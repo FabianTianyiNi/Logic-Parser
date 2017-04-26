@@ -334,6 +334,8 @@ namespace LogicParser
                         curNode.addChild(tmpNode);
                         tmpNode.setParentNode(curNode);
                         curNode = tmpNode;
+
+                        //go back to find father node
                         if (checkIfRunOut(m_tokens))
                         {
                             curNode = curNode.getParentNode();
@@ -341,7 +343,9 @@ namespace LogicParser
                             {
                                 curNode = curNode.getParentNode();
                             }
+                            m_tokens = clone<List<object>>((List<object>)((List<object>)curNode.getValue())[0]);
                             pointer = curNode.nodepointer;
+                            pointer--;
                             break;
                         }
                         pointer--;

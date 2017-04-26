@@ -14,6 +14,19 @@ namespace LogicParser
         private TrueValueNode<T> parentNode;
         public int childrenNumber;
         public int nodepointer;
+        private bool visited;
+
+        public bool Visited
+        {
+            set
+            { this.visited = value; }
+            get
+            { return this.visited; }
+        }
+        public List<TrueValueNode<T>> getchildren()
+        {
+            return this.children;
+        }
         public TrueValueNode(T value)
         {
             if (value == null)
@@ -67,6 +80,10 @@ namespace LogicParser
         public TrueValueNode<T> getParentNode()
         {
             return this.parentNode;
+        }
+        public T getValue()
+        {
+            return this.value;
         }
 
         
