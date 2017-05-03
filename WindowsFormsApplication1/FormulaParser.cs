@@ -16,9 +16,9 @@ namespace LogicParser
         //public Stack<Object> Tokens { get { return m_tokens; } }
         private Operand result;
         public bool isCorrect;
-        TrueValueTree<object> logicTree;
+        public TrueValueTree<object> logicTree;
         private int pointer = 0;
-        Stack<object> tmpStack = new Stack<object>();
+        Stack<object> tmpStack;
         Queue<object> tmpqueueForOperand = new Queue<object>();
         Stack<object> operands = new Stack<object>();
         Stack<Operator> operators = new Stack<Operator>();
@@ -294,10 +294,13 @@ namespace LogicParser
                     }
                 }
             }
-            tmpList.Add(clone<List<object>>(m_tokens));
+            tmpList = cloneList(m_tokens);
             logicTree = new TrueValueTree<object>(tmpList);
             logicTree.Root = new TrueValueNode<object>(tmpList);
             curNode = logicTree.Root;
+            List<TrueValueNode<object>> tmp_list = new List<TrueValueNode<object>>();
+            tmp_list.Add(curNode);
+            treeCounter(pointer, tmp_list);
         }
 
         public static T clone<T>(T RealObject)
@@ -311,68 +314,81 @@ namespace LogicParser
             }
         }
 
-        public void treeCounter()
+        public List<object> cloneList(List<object> list)
         {
-            int reverseSequenceTValueCounter = 0;
-            for (int i = pointer; i >= 0; i--)
+            List<object> newList = new List<object>();
+            foreach (object item in list)
             {
-                if (m_tokens[pointer] is Operand)
-                {
-                    if (((Operand)m_tokens[pointer]).boolValue == Operand.OperandValue.F)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.F;
-                        //update(tmpList);
-                        List<object> list = new List<object>();
-                        list.Add(clone<List<object>>(m_tokens));
-                        tmpNode = new TrueValueNode<object>(list);
-                        tmpNode.childrenNumber = reverseSequenceTValue((List<object>)list[0]);// judge how many child the node has
-                        tmpNode.nodepointer = pointer;
-                        curNode.addChild(tmpNode);
-                        tmpNode.setParentNode(curNode);
-                        curNode = tmpNode;
+                newList.Add(clone<object>(item));
+            }
+            return newList;
+        }
 
-                        //go back to find father node
-                        if (checkIfRunOut(m_tokens))
+        public TrueValueTree<object> treeCounter(int pointer, List<TrueValueNode<object>> inputlist)
+        {
+            List<object> copylist1;
+            List<object> copylist2;
+            foreach (TrueValueNode<object> item in inputlist)
+            {
+                curNode = item;
+                update(curNode);
+                copylist1 = cloneList(((List<object>)(item.getValue())));
+                for (int i = pointer; i >= 0; i--)
+                {
+                    if (copylist1[i] is Operand)
+                    {
+                        if (((Operand)copylist1[i]).boolValue == Operand.OperandValue.F)
                         {
-                            curNode = curNode.getParentNode();
-                            while (curNode.childrenNumber == 1)// if the node only has one child node
-                            {
-                                curNode = curNode.getParentNode();
-                            }
-                            m_tokens = clone<List<object>>((List<object>)((List<object>)curNode.getValue())[0]);
-                            pointer = curNode.nodepointer;
-                            pointer--;
-                            break;
+                            continue;
                         }
-                        pointer--;
-                        treeCounter();
+                        else
+                        {
+                            ((Operand)copylist1[i]).boolValue = Operand.OperandValue.F;
+
+                            //list.Add(clone<List<object>>(copylist));
+                            copylist2 = cloneList(copylist1);
+                            tmpNode = new TrueValueNode<object>(copylist2);
+                            
+                            curNode.addChild(tmpNode);
+                            if (checkIfRunOut(copylist1))
+                            {
+                                //inputlist[i] = Operand.OperandValue.T;
+                                pointer--;
+                                treeCounter(pointer, curNode.getchildren());
+                                break;
+                            }
+                            ((Operand)copylist1[i]).boolValue = Operand.OperandValue.T;
+
+                            //go back to find father node
+                            //if (checkIfRunOut(m_tokens))
+                            //{
+                            //    curNode = curNode.getParentNode();
+                            //    while (curNode.childrenNumber == 1)// if the node only has one child node
+                            //    {
+                            //        curNode = curNode.getParentNode();
+                            //    }
+                            //    m_tokens = clone<List<object>>((List<object>)((List<object>)curNode.getValue())[0]);
+                            //    pointer = curNode.nodepointer;
+                            //    pointer--;
+                            //    break;
+                            //}
+                            //pointer--;
+                            //treeCounter();
+                        }
                     }
                 }
-                pointer--;
             }
-            //while (pointer < 0)
-            //{
-            //    pointer++;
-            //}
-            //while (!(m_tokens[pointer] is Operand))
-            //{
-            //    pointer++;
-            //}
-            //pointer++;
-            //if (m_tokens[pointer] is Operand)
-            //{
-            //    ((Operand)m_tokens[pointer]).boolValue = Operand.OperandValue.T;
-            //    treeCounter();
-            //} 
+
+
+            return logicTree;
         }
+
+        
+        
         public int reverseSequenceTValue(List<object> list)  
         {
             int count = 0;
-            for (int i = 0; i < list.Count; i++)
+            for (int i = list.Count-1; i > 0; i--)
             {
                 if ((list[i] is Operand))
                 {
@@ -397,47 +413,41 @@ namespace LogicParser
             }
             return false;
         }
-        public void update(List<object> list)
+        public void update(TrueValueNode<object> node) //List<object> list
         {
+            List<object> calList = (List<object>)node.getValue();
+            tmpStack = new Stack<object>();
             //pointer = m_tokens.Count - 1; 
             int count = 0; // to calculate how many operands in  the formula.
-            if (list == null || list.Count == 0) throw new ArgumentNullException("Cannot update null list into tree");
-            TrueValueNode<object> tmpnode = new TrueValueNode<object>(list);
+            if (calList == null || calList.Count == 0) throw new ArgumentNullException("Cannot update null list into tree");
+            TrueValueNode<object> tmpnode = new TrueValueNode<object>(calList);
             for (int i = pointer; i >= 0; i--)
             {
-                //if (item is Operator)
-                //{
-                //    tmpStackForOperator.Push(item);
-                //}
-                //if ((item == "T") || (item == "F"))
-                //{
-                //    count++;
-                //    tmpListForOperand.Add(item);
-                //} 
-                if (list[i] is Operator) 
+                
+                if (calList[i] is Operator) 
                 {
                     if (i != 0)
                     {
-                        tmpqueueForOperand.Enqueue(list[i]);
+                        tmpqueueForOperand.Enqueue(calList[i]);
                     }
                     else
                     {
-                        tmpqueueForOperand.Enqueue(list[i]);
+                        tmpqueueForOperand.Enqueue(calList[i]);
                         //evaluate(tmpqueueForOperand, tmpStack);
                         if (containsAnswer())
                         {
                             operands.Pop();
-                            operands.Push(new Operand((Operand)evaluate(tmpqueueForOperand, tmpStack).Pop()));
+                            node.answer = evaluate(tmpqueueForOperand, tmpStack);
                             
                         }
                         else
                         {
-                            operands.Push(new Operand((Operand)evaluate(tmpqueueForOperand, tmpStack).Pop()));
+                            node.answer = evaluate(tmpqueueForOperand, tmpStack);
                         }
                     }
                 }
                     
-                else tmpqueueForOperand.Enqueue(list[i]);
+                else tmpqueueForOperand.Enqueue(calList[i]);
             }
 
             //m_tokens.RemoveAt(m_tokens.Count - 1);
@@ -446,9 +456,10 @@ namespace LogicParser
             tmpqueueForOperand.Clear();
         }
 
-        public Stack<object> evaluate(Queue<object> queue, Stack<object> stack)
+        public string evaluate(Queue<object> queue, Stack<object> stack)
         {
-            if (queue == null) return null;
+            string answer = "";//"T" by default
+            if (queue == null) throw new ArgumentNullException();
             while (queue.Count != 0)
             {
                 stack.Push(queue.Dequeue()); //to avoid stack.Peek() return ArgumentNullError
@@ -465,22 +476,25 @@ namespace LogicParser
                     #region and "∧"
                     case Operator.OperatorType.AND:
                         stack.Push(new Operand(Operator.and(operandA.boolValue, operandB.boolValue)));
+                        answer = Operator.and(operandA.boolValue, operandB.boolValue).boolValue.ToString();
                         break;
                     #endregion
                     #region or
                     case Operator.OperatorType.OR:
                         stack.Push(new Operand(Operator.or(operandA.boolValue, operandB.boolValue)));
+                        answer = Operator.or(operandA.boolValue, operandB.boolValue).boolValue.ToString();
                         break;
                     #endregion
                     #region imply
                     case Operator.OperatorType.ENT:
                         stack.Push(new Operand(Operator.imply(operandA.boolValue, operandB.boolValue)));
+                        answer = Operator.imply(operandA.boolValue, operandB.boolValue).boolValue.ToString();
                         break;
                         #endregion
 
                 }
             }
-            return stack;
+            return answer;
         }
         public bool containsAnswer()
         {

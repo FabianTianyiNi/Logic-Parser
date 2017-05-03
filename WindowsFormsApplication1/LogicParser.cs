@@ -19,7 +19,7 @@ namespace LogicParser
             InitializeComponent();
             terminalScreen.ReadOnly = true;
         }
-
+         
         private void Output_Enter(object sender, EventArgs e)
         {
             
@@ -74,6 +74,8 @@ namespace LogicParser
             string tmpMessage;
             string exp = formulaInput.Text.Trim();
             FormulaParser formula = new FormulaParser();
+            List<object> display = new List<object>();
+            //TrueValueTree<object> tree = formula.logicTree;
             if (!formula.isCorrect)
             {
                 string faultMessage = formula.isMatching(exp);
@@ -88,7 +90,26 @@ namespace LogicParser
 
             formula.Parse(exp);
             formula.initialize();
-            formula.treeCounter();
+            TrueValueTree<object> tree = formula.logicTree;
+            display = tree.treeBFSTrace();
+            
+            foreach (TrueValueNode<object> item in display)
+            {
+                string appendString = "";
+                for (int i = ((List<object>)(item.getValue())).Count-1; i >= 0; i--)
+                {
+                    if (((List<object>)(item.getValue()))[i] is Operand)
+                    {
+                        appendString += ((Operand)(((List<object>)(item.getValue())))[i]).boolValue.ToString();
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                terminalScreen.AppendText(appendString.ToString() + " -> " +item.answer + Environment.NewLine + "> ");
+            }
+
         }
 
         

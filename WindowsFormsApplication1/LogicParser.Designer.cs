@@ -46,12 +46,16 @@
             this.entailment = new System.Windows.Forms.Button();
             this.errorNotification = new System.Windows.Forms.TextBox();
             this.terminalScreen = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.filtered.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.toolBox.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -145,6 +149,7 @@
             this.filtered.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.filtered.Controls.Add(this.tableLayoutPanel6);
             this.filtered.Location = new System.Drawing.Point(626, 3);
             this.filtered.Name = "filtered";
             this.filtered.Size = new System.Drawing.Size(151, 427);
@@ -263,11 +268,32 @@
             this.terminalScreen.Location = new System.Drawing.Point(3, 3);
             this.terminalScreen.Multiline = true;
             this.terminalScreen.Name = "terminalScreen";
-            this.terminalScreen.ReadOnly = true;
             this.terminalScreen.Size = new System.Drawing.Size(611, 367);
             this.terminalScreen.TabIndex = 1;
             this.terminalScreen.Text = " ";
             this.terminalScreen.TextChanged += new System.EventHandler(this.terminalScreen_TextChanged);
+            // 
+            // tableLayoutPanel6
+            // 
+            this.tableLayoutPanel6.ColumnCount = 1;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel6.Controls.Add(this.textBox1, 0, 0);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.RowCount = 2;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.655502F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.3445F));
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(139, 399);
+            this.tableLayoutPanel6.TabIndex = 0;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Location = new System.Drawing.Point(3, 3);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(133, 24);
+            this.textBox1.TabIndex = 0;
             // 
             // LogicParser
             // 
@@ -281,11 +307,14 @@
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            this.filtered.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.toolBox.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -309,6 +338,8 @@
         private System.Windows.Forms.Button entailment;
         private System.Windows.Forms.TextBox terminalScreen;
         private System.Windows.Forms.TextBox errorNotification;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

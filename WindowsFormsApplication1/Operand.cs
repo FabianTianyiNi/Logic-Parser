@@ -69,7 +69,7 @@ namespace LogicParser
         public Operand(Operand operand)
         {
             this.Type = operand.Type;
-            this.boolType = operand.boolType;
+            this.boolValue = operand.boolValue;
             this.Value = operand.Value;
         }
 

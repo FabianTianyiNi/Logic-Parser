@@ -53,7 +53,7 @@ namespace LogicParser
             this.Type = convertOperator(type);
             this.Value = value;
         }
-        public static Operand tmpResult = new Operand(Operand.OperandType.TMP,"TMP");
+        public static Operand tmpResult = new Operand(Operand.OperandType.TMP, "TMP");
 
         /// <summary>
         /// Define new operator and return their operator type respectively
@@ -77,14 +77,14 @@ namespace LogicParser
 
         public static Operand and(Operand.OperandValue OperandA, Operand.OperandValue OperandB)
         {
-            
+
             if (OperandA == Operand.OperandValue.T)
             {
-                tmpResult.boolValue = OperandB == Operand.OperandValue.T ?  Operand.OperandValue.T : Operand.OperandValue.F;
+                tmpResult.boolValue = OperandB == Operand.OperandValue.T ? Operand.OperandValue.T : Operand.OperandValue.F;
             }
             if (OperandA == Operand.OperandValue.F)
             {
-                tmpResult.boolValue = OperandB == Operand.OperandValue.T ? Operand.OperandValue.T : Operand.OperandValue.F;
+                tmpResult.boolValue = Operand.OperandValue.F;
             }
             return tmpResult;
         }
@@ -103,6 +103,6 @@ namespace LogicParser
             return tmpResult;
         }
 
-        
+
     }
 }

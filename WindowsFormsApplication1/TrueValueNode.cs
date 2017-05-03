@@ -16,6 +16,8 @@ namespace LogicParser
         public int nodepointer;
         private bool visited;
 
+        public string answer;
+       
         public bool Visited
         {
             set

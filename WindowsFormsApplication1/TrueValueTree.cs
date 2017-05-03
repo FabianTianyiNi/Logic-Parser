@@ -47,10 +47,11 @@ namespace LogicParser
             }
         }
 
-        public void treeBFSTrace()
+        public List<object> treeBFSTrace()
         {
             Queue<TrueValueNode<T>> tempqueue = new Queue<TrueValueNode<T>>();
             List<TrueValueNode<T>> children = new List<TrueValueNode<T>>();
+            List<object> displayList = new List<object>();
             visitedNode = new List<TrueValueNode<T>>();
             tempqueue.Enqueue(root);
             root.Visited = true;
@@ -58,13 +59,16 @@ namespace LogicParser
             {
                 TrueValueNode<T> node = tempqueue.Dequeue();
                 visitedNode.Add(node);
+                displayList.Add(node);
                 children = node.getchildren();
                 foreach (TrueValueNode<T> item in children)
                 {
                     tempqueue.Enqueue(item);
                     item.Visited = true;
+                    displayList.Add(item);
                 }
             }
+            return displayList;
         }
         public bool checkIfExist(TrueValueNode<T> node)
         {
@@ -80,6 +84,8 @@ namespace LogicParser
             if (root == null) return true;
             return false;
         }
+
+        
 
     }
 }
